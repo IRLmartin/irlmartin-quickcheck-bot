@@ -1,3 +1,24 @@
+import discord
+from discord.ext import commands
+import openai
+import os
+
+print("Discord library version:", discord.__version__)  # For debugging
+
+# Load environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+
+openai.api_key = OPENAI_API_KEY
+
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix="/", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+    await bot.tree.sync()  # Sync slash commands with Discord
+
 @bot.tree.command(name="quickcheck", description="Check text for TikTok Shop violations")
 async def quickcheck(interaction: discord.Interaction, *, text: str):
     await interaction.response.defer()
@@ -21,3 +42,9 @@ async def quickcheck(interaction: discord.Interaction, *, text: str):
     except Exception as e:
         print("Error calling OpenAI API:", e)
         await interaction.followup.send("❌ Sorry, something went wrong while checking the text. Please try again later.")
+
+@bot.tree.command(name="status", description="Check if the bot is online and running")
+async def status(interaction: discord.Interaction):
+    await interaction.response.send_message("✅ IRLmartin AI Bot is online and operational.")
+
+bot.run(DISCORD_TOKEN)
