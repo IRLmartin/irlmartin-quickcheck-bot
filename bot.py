@@ -1,6 +1,4 @@
 import discord
-print("Discord library version:", discord.__version__)
-
 from discord.ext import commands
 import openai
 import os
@@ -17,9 +15,15 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} commands")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
 
-@bot.command(name="quickcheck", help="Check text for TikTok Shop violations")
-async def quickcheck(ctx, *, text: str):
+@bot.tree.command(name="quickcheck", description="Check text for TikTok Shop violations")
+async def quickcheck(interaction: discord.Interaction, *, text: str):
+    await interaction.response.defer()
     prompt = (
         "You are a TikTok compliance checker. Analyze the following text for TikTok Shop violations, banned words, "
         "health claims, or manipulative language. Respond with a risk level (Safe, Risky, Violation) and suggest fixes.\n\n"
@@ -32,10 +36,10 @@ async def quickcheck(ctx, *, text: str):
         temperature=0.3,
     )
     result = response.choices[0].message.content.strip()
-    await ctx.send(f"**Compliance Check Result:**\n{result}")
+    await interaction.followup.send(f"**Compliance Check Result:**\n{result}")
 
-@bot.command(name="status", help="Check if the bot is online and running")
-async def status(ctx):
-    await ctx.send("✅ IRLmartin AI Bot is online and operational.")
+@bot.tree.command(name="status", description="Check if the bot is online and running")
+async def status(interaction: discord.Interaction):
+    await interaction.response.send_message("✅ IRLmartin AI Bot is online and operational.")
 
 bot.run(DISCORD_TOKEN)
