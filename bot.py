@@ -12,4 +12,4 @@ async def on_ready():
     await bot.load_extension("timer")  # Load the timer command from timer.py
     print(f"✅ Logged in as {bot.user}")
 
-bot.run("YOUR_BOT_TOKEN")
+bot.run("MTM3ODIyMTkyMjMyNzcyNDA2Mw.GbAN0a.9lDdQTTbK5fCQ8DhttuhgFK1RZeaK3SVexwGIg")
