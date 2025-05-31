@@ -1,39 +1,15 @@
-import os
 import discord
 from discord.ext import commands
-import openai
-
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-openai.api_key = OPENAI_API_KEY
+import asyncio
 
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix="/", intents=intents)
+
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
-    await bot.tree.sync()
+    await bot.tree.sync()  # Sync slash commands
+    await bot.load_extension("timer")  # Load the timer command from timer.py
+    print(f"✅ Logged in as {bot.user}")
 
-@bot.tree.command(name="quickcheck", description="Check text for TikTok Shop violations")
-async def quickcheck(interaction: discord.Interaction, *, text: str):
-    await interaction.response.defer()
-    prompt = (
-        "You are a TikTok compliance checker. Analyze the following text for TikTok Shop violations, banned words, "
-        "health claims, or manipulative language. Respond with a risk level (Safe, Risky, Violation) and suggest fixes.\n\n"
-        f"Text: {text}"
-    )
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=150,
-            temperature=0.3,
-        )
-        result = response.choices[0].message.content.strip()
-        await interaction.followup.send(f"**Compliance Check Result:**\n{result}")
-    except Exception as e:
-        await interaction.followup.send("❌ Sorry, something went wrong while checking the text. Please try again later.")
-
-bot.run(DISCORD_TOKEN)
+bot.run("YOUR_BOT_TOKEN")
