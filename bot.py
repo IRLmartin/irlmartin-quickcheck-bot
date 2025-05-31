@@ -3,7 +3,7 @@ from discord.ext import commands
 import openai
 import os
 
-print("Discord library version:", discord.__version__)  # For debugging
+print("Discord.py version:", discord.__version__)  # This will print your discord.py version
 
 # Load environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
-    await bot.tree.sync()  # Sync slash commands with Discord
+    await bot.tree.sync()  # Sync slash commands on ready
 
 @bot.tree.command(name="quickcheck", description="Check text for TikTok Shop violations")
 async def quickcheck(interaction: discord.Interaction, *, text: str):
